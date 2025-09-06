@@ -1,0 +1,388 @@
+{
+  "name": "Personal Ai Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -496,
+        -192
+      ],
+      "id": "4ed2bbc4-f9c8-4747-aa03-2376dec9c842",
+      "name": "Telegram Trigger",
+      "webhookId": "11b44f9a-8201-4992-8a5e-5383fc275365",
+      "notesInFlow": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "5rLQdh3jUIXZr5aS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "You are a personal AI assistant that helps users manage their daily tasks and communications through various integrated tools. You have access to the following tools and should use them appropriately based on user requests:\nAvailable Tools:\n1. Email Tool\nUse for: Sending emails, email communications, notifications, follow-ups, or any email-related requests\nParameters:\n\nTo: Email recipient address\nSubject: Email subject line\nMessage: Email body content\nWhen to use: When user asks to send an email, notify someone via email, or mentions email communication\n\n2. Calendar Tool\nUse for: Creating calendar events, scheduling meetings, setting appointments, or any time-based activities\nParameters:\n\nAutomatically creates events in the user's Google Calendar (ayushkanoje056@gmail.com)\nWhen to use: When user mentions scheduling, meetings, appointments, reminders for specific dates/times, or calendar-related requests\n\n3. Jira Task Management Tool\nUse for: Creating tasks, project management, work items, to-dos, or tracking activities\nParameters:\n\nProject: \"Personal Growth Task\" (automatically set)\nIssue Type: \"Task\" (automatically set)\nSummary: Brief description of the task\nWhen to use: When user wants to create tasks, track work, manage projects, or mentions task management\n\nImportant Guidelines:\nTask Logging Behavior:\n\nALWAYS log every action you perform to help the user track their automation usage\nAfter completing any tool action, the system will automatically append a row to the Google Sheet with:\n\nTask: Brief description of what was done\nStatus: Current status of the action\nTask detail: More detailed information\nDate: Current date\nNotes: Any additional relevant information\n\n\n\nResponse Strategy:\n\nUnderstand the Intent: Carefully analyze what the user is asking for\nChoose Appropriate Tool(s): Select the most relevant tool(s) for the task\nExecute with Context: Use the tools with appropriate parameters\nProvide Feedback: Give the user clear confirmation of what was accomplished\nAuto-log: The system will automatically log the action to the tracking sheet\n\nCommunication Style:\n\nBe helpful, concise, and proactive\nConfirm actions taken\nAsk for clarification when requests are ambiguous\nMaintain context across the conversation using memory\nAlways acknowledge successful completions\n\nMemory Usage:\n\nRemember user preferences and context from previous interactions\nUse the conversation history to provide more personalized assistance\nReference past actions when relevant\n\nRemember: You are designed to make the user's life easier by automating routine tasks across email, calendar, and project management. Always strive to understand the user's intent and execute the most appropriate action while keeping them informed of what you've accomplished."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -256,
+        -192
+      ],
+      "id": "60df17db-00c9-4793-b52a-a25df5b8e19f",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        -192
+      ],
+      "id": "597d4bd2-1439-4314-98d1-c0acd8d380ff",
+      "name": "Send a text message",
+      "webhookId": "a7af2db2-4538-4c53-98e2-087ac95fab10",
+      "credentials": {
+        "telegramApi": {
+          "id": "5rLQdh3jUIXZr5aS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.from.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -144,
+        -336
+      ],
+      "id": "b454d665-0158-46a8-864f-487e7c8eff9a",
+      "name": "Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this Tool for sending Email",
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        -480,
+        128
+      ],
+      "id": "826e01f2-89af-4e74-828e-6f5f404f7c65",
+      "name": "Email",
+      "webhookId": "e21e5092-7840-4578-a279-c63cedc7d970",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "C8oeJhKhFQ2NAewG",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to create event in calender",
+        "calendar": {
+          "__rl": true,
+          "value": "ayushkanoje056@gmail.com",
+          "mode": "list",
+          "cachedResultName": "ayushkanoje056@gmail.com"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        -352,
+        128
+      ],
+      "id": "bfe78e2c-893b-4c42-a5f0-7e0612ade989",
+      "name": "Calender",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "qkZilPAUETq9iSWO",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Create an issue in Jira",
+        "project": {
+          "__rl": true,
+          "value": "10000",
+          "mode": "list",
+          "cachedResultName": "Personal Growth Task"
+        },
+        "issueType": {
+          "__rl": true,
+          "value": "10003",
+          "mode": "list",
+          "cachedResultName": "Task"
+        },
+        "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', `Daily checklist:\n- Review yesterday’s tasks\n- Plan today’s work\n- Update Jira boards`, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.jiraTool",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        128
+      ],
+      "id": "e461a413-efeb-4fc6-8389-7eba2c1ea9f0",
+      "name": "Jira Task management",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "XluELWPB1xLqknw5",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        -336
+      ],
+      "id": "3ecf8ae8-e747-422c-905c-28a5b9aa603c",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "1jQDIZepKOeNyNaX",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1tQ8HbImKKVzsvaS2CI2DfmN04rmOZIrqhkNXjUErLSk",
+          "mode": "list",
+          "cachedResultName": "Personal Automation sheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQ8HbImKKVzsvaS2CI2DfmN04rmOZIrqhkNXjUErLSk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1357567028,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQ8HbImKKVzsvaS2CI2DfmN04rmOZIrqhkNXjUErLSk/edit#gid=1357567028"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $now.format('YYYY-MM-DD') }}",
+            "Task": "={{ $('Telegram Trigger').item.json.message.text.substring(0, 100) }}",
+            "Status": "={{ $('AI Agent').item.json.output.includes('successfully') || $('AI Agent').item.json.output.includes('created') || $('AI Agent').item.json.output.includes('sent') ? 'Completed' : $('AI Agent').item.json.output.includes('error') || $('AI Agent').item.json.output.includes('failed') ? 'Failed' : 'In Progress' }}",
+            "Task detail": "={{ $('Telegram Trigger').item.json.message.text.substring(0, 100) }}",
+            "Notes": "={{ 'Automated via Telegram by ' + $('Telegram Trigger').item.json.message.from.first_name }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Task",
+              "displayName": "Task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Task detail",
+              "displayName": "Task detail",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        320,
+        -192
+      ],
+      "id": "583b9d8d-545f-4743-ad05-a002e36bd4d9",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "M4llsjKgpTCf9Yx5",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calender": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Jira Task management": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6d14b3ce-0c72-4a4e-8be6-acaea9ffdccd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f15cef8b47e7cf12775f71b204c67d7eb0b9642b56c4c08490e37a58a340e8f8"
+  },
+  "id": "gvGw2aYFObbKqKyr",
+  "tags": []
+}
