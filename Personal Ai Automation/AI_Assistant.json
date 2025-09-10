@@ -113,7 +113,7 @@
         "toolDescription": "Use this tool to create event in calender",
         "calendar": {
           "__rl": true,
-          Your-emailID,
+          "value": "Your-emailID",
           "mode": "list",
           "cachedResultName": "ayushkanoje056@gmail.com"
         },
