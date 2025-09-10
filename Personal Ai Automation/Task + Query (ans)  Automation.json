@@ -16,11 +16,11 @@
       ],
       "id": "4ed2bbc4-f9c8-4747-aa03-2376dec9c842",
       "name": "Telegram Trigger",
-      "webhookId": "11b44f9a-8201-4992-8a5e-5383fc275365",
+      "webhookId": "XXXX-XXXX-XXXX",
       "notesInFlow": false,
       "credentials": {
         "telegramApi": {
-          "id": "5rLQdh3jUIXZr5aS",
+          "id": "REPLACE_WITH_YOUR_ID",
           "name": "Telegram account"
         }
       }
@@ -30,7 +30,7 @@
         "promptType": "define",
         "text": "={{ $json.message.text }}",
         "options": {
-          "systemMessage": "You are a personal AI assistant that helps users manage their daily tasks and communications through various integrated tools. You have access to the following tools and should use them appropriately based on user requests:\nAvailable Tools:\n1. Email Tool\nUse for: Sending emails, email communications, notifications, follow-ups, or any email-related requests\nParameters:\n\nTo: Email recipient address\nSubject: Email subject line\nMessage: Email body content\nWhen to use: When user asks to send an email, notify someone via email, or mentions email communication\n\n2. Calendar Tool\nUse for: Creating calendar events, scheduling meetings, setting appointments, or any time-based activities\nParameters:\n\nAutomatically creates events in the user's Google Calendar (ayushkanoje056@gmail.com)\nWhen to use: When user mentions scheduling, meetings, appointments, reminders for specific dates/times, or calendar-related requests\n\n3. Jira Task Management Tool\nUse for: Creating tasks, project management, work items, to-dos, or tracking activities\nParameters:\n\nProject: \"Personal Growth Task\" (automatically set)\nIssue Type: \"Task\" (automatically set)\nSummary: Brief description of the task\nWhen to use: When user wants to create tasks, track work, manage projects, or mentions task management\n\nImportant Guidelines:\nTask Logging Behavior:\n\nALWAYS log every action you perform to help the user track their automation usage\nAfter completing any tool action, the system will automatically append a row to the Google Sheet with:\n\nTask: Brief description of what was done\nStatus: Current status of the action\nTask detail: More detailed information\nDate: Current date\nNotes: Any additional relevant information\n\n\n\nResponse Strategy:\n\nUnderstand the Intent: Carefully analyze what the user is asking for\nChoose Appropriate Tool(s): Select the most relevant tool(s) for the task\nExecute with Context: Use the tools with appropriate parameters\nProvide Feedback: Give the user clear confirmation of what was accomplished\nAuto-log: The system will automatically log the action to the tracking sheet\n\nCommunication Style:\n\nBe helpful, concise, and proactive\nConfirm actions taken\nAsk for clarification when requests are ambiguous\nMaintain context across the conversation using memory\nAlways acknowledge successful completions\n\nMemory Usage:\n\nRemember user preferences and context from previous interactions\nUse the conversation history to provide more personalized assistance\nReference past actions when relevant\n\nRemember: You are designed to make the user's life easier by automating routine tasks across email, calendar, and project management. Always strive to understand the user's intent and execute the most appropriate action while keeping them informed of what you've accomplished."
+          "systemMessage": "You are a personal AI assistant that helps users manage their daily tasks and communications through various integrated tools. You have access to the following tools and should use them appropriately based on user requests:\nAvailable Tools:\n1. Email Tool\nUse for: Sending emails, email communications, notifications, follow-ups, or any email-related requests\nParameters:\n\nTo: Email recipient address\nSubject: Email subject line\nMessage: Email body content\nWhen to use: When user asks to send an email, notify someone via email, or mentions email communication\n\n2. Calendar Tool\nUse for: Creating calendar events, scheduling meetings, setting appointments, or any time-based activities\nParameters:\n\nAutomatically creates events in the user's Google Calendar (ayushkanoje056@gmail.com)\nWhen to use: When user mentions scheduling, meetings, appointments, reminders for specific dates/times, or calendar-related requests\n\n3. Jira Task Management Tool\nUse for: Creating tasks, project management, work items, to-dos, or tracking activities\nParameters:\n\nProject: \"TASK_NAME_HERE\" (automatically set)\nIssue Type: \"Task\" (automatically set)\nSummary: Brief description of the task\nWhen to use: When user wants to create tasks, track work, manage projects, or mentions task management\n\nImportant Guidelines:\nTask Logging Behavior:\n\nALWAYS log every action you perform to help the user track their automation usage\nAfter completing any tool action, the system will automatically append a row to the Google Sheet with:\n\nTask: Brief description of what was done\nStatus: Current status of the action\nTask detail: More detailed information\nDate: Current date\nNotes: Any additional relevant information\n\n\n\nResponse Strategy:\n\nUnderstand the Intent: Carefully analyze what the user is asking for\nChoose Appropriate Tool(s): Select the most relevant tool(s) for the task\nExecute with Context: Use the tools with appropriate parameters\nProvide Feedback: Give the user clear confirmation of what was accomplished\nAuto-log: The system will automatically log the action to the tracking sheet\n\nCommunication Style:\n\nBe helpful, concise, and proactive\nConfirm actions taken\nAsk for clarification when requests are ambiguous\nMaintain context across the conversation using memory\nAlways acknowledge successful completions\n\nMemory Usage:\n\nRemember user preferences and context from previous interactions\nUse the conversation history to provide more personalized assistance\nReference past actions when relevant\n\nRemember: You are designed to make the user's life easier by automating routine tasks across email, calendar, and project management. Always strive to understand the user's intent and execute the most appropriate action while keeping them informed of what you've accomplished."
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
@@ -61,7 +61,7 @@
       "webhookId": "a7af2db2-4538-4c53-98e2-087ac95fab10",
       "credentials": {
         "telegramApi": {
-          "id": "5rLQdh3jUIXZr5aS",
+          "id": "REPLACE_WITH_YOUR_ID",
           "name": "Telegram account"
         }
       }
@@ -113,7 +113,7 @@
         "toolDescription": "Use this tool to create event in calender",
         "calendar": {
           "__rl": true,
-          "value": "ayushkanoje056@gmail.com",
+          Your-emailID,
           "mode": "list",
           "cachedResultName": "ayushkanoje056@gmail.com"
         },
@@ -140,9 +140,9 @@
         "toolDescription": "Create an issue in Jira",
         "project": {
           "__rl": true,
-          "value": "10000",
+          "value": "PROJECT_ID_HERE",
           "mode": "list",
-          "cachedResultName": "Personal Growth Task"
+          "cachedResultName": "TASK_NAME_HERE"
         },
         "issueType": {
           "__rl": true,
@@ -193,10 +193,10 @@
         "operation": "append",
         "documentId": {
           "__rl": true,
-          "value": "1tQ8HbImKKVzsvaS2CI2DfmN04rmOZIrqhkNXjUErLSk",
+          "value": "SPREADSHEET_ID_HERE",
           "mode": "list",
           "cachedResultName": "Personal Automation sheet",
-          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tQ8HbImKKVzsvaS2CI2DfmN04rmOZIrqhkNXjUErLSk/edit?usp=drivesdk"
+          "cachedResultUrl": "SPREADSHEET_ID_HERE_URL"
         },
         "sheetName": {
           "__rl": true,
