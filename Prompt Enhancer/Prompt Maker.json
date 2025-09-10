@@ -1,0 +1,264 @@
+{
+  "name": "Prompt Maker",
+  "nodes": [
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.0-flash-exp",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.0-flash-exp"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Analyze this prompt request and identify: 1) Main objective 2) Required parameters 3) Output format needs 4) Context requirements 5) Constraints or specifications. Prompt: {{ $json.user_prompt }}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGeminiTool",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        5168
+      ],
+      "id": "23645d43-d3ae-4f02-b2e3-d260920e5bcf",
+      "name": "prompt_analyzer",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "KSUgEeNmbQ2ZcEyS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Based on the analysis, create a comprehensive JSON structure with all necessary parameters, settings, and key-value pairs that an AI model would need to generate optimal output. Include: system_message, parameters, output_format, constraints, examples, and any other relevant fields. Analysis: {{ $json.analysis }}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGeminiTool",
+      "typeVersion": 1,
+      "position": [
+        1728,
+        5168
+      ],
+      "id": "4e77ec1a-85a3-45d4-8d9a-78ff05ac7ffe",
+      "name": "json_structure_generator",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "KSUgEeNmbQ2ZcEyS",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1840,
+        4688
+      ],
+      "id": "8f85f94b-e3cb-4b87-b837-b054b95a6e8b",
+      "name": "Memory2"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o-mini",
+        "options": {
+          "maxTokens": 3000,
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        1744,
+        4688
+      ],
+      "id": "aee3e825-c3fd-4f44-abb3-3ab8340c16ab",
+      "name": "Chat model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "IxTa8bcaElWZpFnW",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {
+          "download": true
+        }
+      },
+      "id": "9f3a18d0-7824-41f5-aca9-023586d242e2",
+      "name": "prompt trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        4864
+      ],
+      "webhookId": "75515671-628b-49a3-90f2-8fd0de89d996",
+      "credentials": {
+        "telegramApi": {
+          "id": "346XYS80Twck50rQ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('prompt trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2176,
+        4864
+      ],
+      "id": "eb998f50-7d3a-4a10-bc11-8b4c6eda5e92",
+      "name": "prompt response",
+      "webhookId": "0d5a9b80-6fdc-4bf7-8235-86cf82ab0854",
+      "credentials": {
+        "telegramApi": {
+          "id": "346XYS80Twck50rQ",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "You are an expert AI prompt engineer. Your primary goal is to analyze a user's request and either improve their prompt or create a structured JSON configuration if they ask for it.\n\n\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1744,
+        4864
+      ],
+      "id": "c06c2d1e-cd9d-4c06-8c0e-701779576d54",
+      "name": "AI Agent"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "prompt_analyzer": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "json_structure_generator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory2": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chat model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "prompt trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "prompt response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "be9c03b5-eabf-40cd-bce2-c184adc44c30",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7d89bfa9916c14422cffedd99e9e2c81dcf11d07c4f49a5ec766928d5e6dbfef"
+  },
+  "id": "nBm5qFkaEQduSmrL",
+  "tags": [
+    {
+      "name": "Prompt",
+      "id": "12UuQoU5NnW80XaA",
+      "createdAt": "2025-09-10T09:49:55.056Z",
+      "updatedAt": "2025-09-10T09:49:55.056Z"
+    }
+  ]
+}
