@@ -1,0 +1,387 @@
+{
+  "name": "Quotes",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 3
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        736,
+        6032
+      ],
+      "id": "2ff14182-bc40-480f-85b5-feb016313d83",
+      "name": "Every 3 Hours - Anime"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6,
+              "triggerAtMinute": 25
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        736,
+        5232
+      ],
+      "id": "5d071e2d-b680-4e24-8eea-dc8f5debd3d4",
+      "name": "Morning Bible Verse1"
+    },
+    {
+      "parameters": {
+        "url": "https://bolls.life/get-random-verse/YLT/",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1072,
+        5392
+      ],
+      "id": "7e6ffa8c-0262-4e7a-b587-585cdd0dacf5",
+      "name": "Fetch Bible Verse1"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Mapping of book numbers to book names\nconst books = {\n  1: \"Genesis\", 2: \"Exodus\", 3: \"Leviticus\", 4: \"Numbers\", 5: \"Deuteronomy\",\n  6: \"Joshua\", 7: \"Judges\", 8: \"Ruth\", 9: \"1 Samuel\", 10: \"2 Samuel\",\n  11: \"1 Kings\", 12: \"2 Kings\", 13: \"1 Chronicles\", 14: \"2 Chronicles\",\n  15: \"Ezra\", 16: \"Nehemiah\", 17: \"Esther\", 18: \"Job\", 19: \"Psalms\",\n  20: \"Proverbs\", 21: \"Ecclesiastes\", 22: \"Song of Solomon\", 23: \"Isaiah\",\n  24: \"Jeremiah\", 25: \"Lamentations\", 26: \"Ezekiel\", 27: \"Daniel\",\n  28: \"Hosea\", 29: \"Joel\", 30: \"Amos\", 31: \"Obadiah\", 32: \"Jonah\",\n  33: \"Micah\", 34: \"Nahum\", 35: \"Habakkuk\", 36: \"Zephaniah\", 37: \"Haggai\",\n  38: \"Zechariah\", 39: \"Malachi\", 40: \"Matthew\", 41: \"Mark\", 42: \"Luke\",\n  43: \"John\", 44: \"Acts\", 45: \"Romans\", 46: \"1 Corinthians\", 47: \"2 Corinthians\",\n  48: \"Galatians\", 49: \"Ephesians\", 50: \"Philippians\", 51: \"Colossians\",\n  52: \"1 Thessalonians\", 53: \"2 Thessalonians\", 54: \"1 Timothy\", 55: \"2 Timothy\",\n  56: \"Titus\", 57: \"Philemon\", 58: \"Hebrews\", 59: \"James\", 60: \"1 Peter\",\n  61: \"2 Peter\", 62: \"1 John\", 63: \"2 John\", 64: \"3 John\", 65: \"Jude\", 66: \"Revelation\"\n};\n\ntry {\n  // Get the input data\n  const verseData = $input.item.json;\n  \n  // Check if we have valid data\n  if (!verseData || !verseData.text) {\n    throw new Error('No valid verse data received');\n  }\n  \n  // Map book number to name\n  const bookName = books[verseData.book] || 'Unknown Book';\n  const reference = `${bookName} ${verseData.chapter}:${verseData.verse}`;\n  \n  // Format for next node\n  return {\n    json: {\n      text: verseData.text,\n      reference: reference,\n      book: bookName,\n      chapter: verseData.chapter,\n      verse: verseData.verse\n    }\n  };\n} catch (error) {\n  // Return error info for debugging\n  return {\n    json: {\n      error: error.message,\n      receivedData: JSON.stringify($input.item.json, null, 2),\n      text: 'Error fetching verse',\n      reference: 'Debug Mode'\n    }\n  };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        5392
+      ],
+      "id": "ce9e5333-622c-47e2-aa54-17966ea54288",
+      "name": "Format Bible Verse1"
+    },
+    {
+      "parameters": {
+        "chatId": "1730552110",
+        "text": "={{ \"📖 \\\"\" + $json.text + \"\\\"\\n\\n— \" + $json.reference }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1600,
+        5392
+      ],
+      "id": "c7df5082-0144-4b74-b9e8-dcaa074d4eba",
+      "name": "Send Bible Verse1",
+      "webhookId": "fc423ca6-0287-4a98-9bb0-3e3a1391776d",
+      "credentials": {
+        "telegramApi": {
+          "id": "NdUVKq8f0CoWgTf7",
+          "name": "Quotes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        736,
+        5568
+      ],
+      "id": "5690e110-0034-4eb2-a543-e0c69b864246",
+      "name": "Evening Bible Verse1"
+    },
+    {
+      "parameters": {
+        "url": "https://stoic-quotes.com/api/quote",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1072,
+        5808
+      ],
+      "id": "f359f6af-3514-4adf-9f94-5647f231c121",
+      "name": "Fetch Stoic Quote1"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "try {\n  const data = $input.item.json;\n  \n  // Check if we have valid data\n  if (!data || (!data.text && !data.quote)) {\n    throw new Error('No valid quote data');\n  }\n  \n  // Handle different possible response formats\n  const quoteText = data.text || data.quote || data.body || '';\n  const author = data.author || data.source || 'Unknown';\n  \n  return {\n    json: {\n      text: quoteText,\n      author: author,\n      formatted: `✨ \"${quoteText}\"\\n\\n— ${author}`\n    }\n  };\n} catch (error) {\n  return {\n    json: {\n      error: error.message,\n      receivedData: JSON.stringify($input.item.json, null, 2),\n      text: 'Error processing quote',\n      author: 'System',\n      formatted: '❌ Error fetching stoic quote. Will retry on next schedule.'\n    }\n  };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        5808
+      ],
+      "id": "b97db27e-7324-404e-b135-5cbf0aedb892",
+      "name": "Format Stoic Quote1"
+    },
+    {
+      "parameters": {
+        "chatId": "1730552110",
+        "text": "={{ $json.formatted }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1600,
+        5808
+      ],
+      "id": "8555ddd1-5bc7-451f-ac91-799876c6a882",
+      "name": "Send Stoic Quote1",
+      "webhookId": "5aff782e-09a3-4ac2-bf22-c36e98232c07",
+      "credentials": {
+        "telegramApi": {
+          "id": "NdUVKq8f0CoWgTf7",
+          "name": "Quotes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.animechan.io/v1/quotes/random",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1072,
+        6032
+      ],
+      "id": "ca2b919c-9014-4c4a-9525-8e60226ffcb8",
+      "name": "Fetch Anime Quote1"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "try {\n  const data = $input.item.json;\n  \n  // Handle nested data structure\n  const quoteData = data.data || data;\n  \n  // Check if we have valid data\n  if (!quoteData || !quoteData.content) {\n    throw new Error('No valid anime quote data');\n  }\n  \n  // Extract fields with fallbacks\n  const content = quoteData.content || quoteData.quote || '';\n  const character = quoteData.character?.name || quoteData.character || 'Unknown Character';\n  const anime = quoteData.anime?.name || quoteData.anime || 'Unknown Anime';\n  \n  return {\n    json: {\n      content: content,\n      character: character,\n      anime: anime,\n      formatted: `🎭 \"${content}\"\\n\\n— ${character} (${anime})`\n    }\n  };\n} catch (error) {\n  return {\n    json: {\n      error: error.message,\n      receivedData: JSON.stringify($input.item.json, null, 2),\n      content: 'Error fetching anime quote',\n      character: 'System',\n      anime: 'Debug',\n      formatted: '❌ Error fetching anime quote. Will retry on next schedule.'\n    }\n  };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        6032
+      ],
+      "id": "a5142d5a-5b0b-4385-9e68-63ac9b3d0380",
+      "name": "Format Anime Quote1"
+    },
+    {
+      "parameters": {
+        "chatId": "1730552110",
+        "text": "={{ $json.formatted }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1584,
+        6032
+      ],
+      "id": "39cd9b00-3809-4e35-96a5-622126197dd6",
+      "name": "Send Anime Quote1",
+      "webhookId": "bfe095ac-dfd8-4826-bf59-1f332ba907ec",
+      "credentials": {
+        "telegramApi": {
+          "id": "NdUVKq8f0CoWgTf7",
+          "name": "Quotes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 5,
+              "triggerAtMinute": 15
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        736,
+        5808
+      ],
+      "id": "ca3fe5f2-a9d1-4b85-8dd4-a7b21dd4d2ac",
+      "name": "Every 5 Hours - Stoic1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every 3 Hours - Anime": {
+      "main": [
+        [
+          {
+            "node": "Fetch Anime Quote1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Morning Bible Verse1": {
+      "main": [
+        [
+          {
+            "node": "Fetch Bible Verse1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Bible Verse1": {
+      "main": [
+        [
+          {
+            "node": "Format Bible Verse1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Bible Verse1": {
+      "main": [
+        [
+          {
+            "node": "Send Bible Verse1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Evening Bible Verse1": {
+      "main": [
+        [
+          {
+            "node": "Fetch Bible Verse1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Stoic Quote1": {
+      "main": [
+        [
+          {
+            "node": "Format Stoic Quote1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Stoic Quote1": {
+      "main": [
+        [
+          {
+            "node": "Send Stoic Quote1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Anime Quote1": {
+      "main": [
+        [
+          {
+            "node": "Format Anime Quote1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Anime Quote1": {
+      "main": [
+        [
+          {
+            "node": "Send Anime Quote1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 5 Hours - Stoic1": {
+      "main": [
+        [
+          {
+            "node": "Fetch Stoic Quote1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Kolkata",
+    "saveDataErrorExecution": "all",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "98512db7-4077-4c12-b50b-f4238aa0a07c",
+  "meta": {
+    "templateId": "joke_agent_with_http_tool",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "43af02e232fe0fab51dd812a59c7bc6dcb43b433e6a1a27d6130db63786ddaf7"
+  },
+  "id": "mbTOYh4t5fSa58KM",
+  "tags": []
+}
